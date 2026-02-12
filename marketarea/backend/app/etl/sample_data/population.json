@@ -1,0 +1,12 @@
+[
+  {"grid_id": 1, "total_population": 3200, "age_20_39_ratio": 0.42, "age_40_59_ratio": 0.30, "age_60_plus_ratio": 0.12, "household_1_2_ratio": 0.58},
+  {"grid_id": 2, "total_population": 2800, "age_20_39_ratio": 0.45, "age_40_59_ratio": 0.28, "age_60_plus_ratio": 0.10, "household_1_2_ratio": 0.62},
+  {"grid_id": 3, "total_population": 3500, "age_20_39_ratio": 0.38, "age_40_59_ratio": 0.32, "age_60_plus_ratio": 0.15, "household_1_2_ratio": 0.48},
+  {"grid_id": 4, "total_population": 4100, "age_20_39_ratio": 0.35, "age_40_59_ratio": 0.33, "age_60_plus_ratio": 0.18, "household_1_2_ratio": 0.42},
+  {"grid_id": 5, "total_population": 2200, "age_20_39_ratio": 0.50, "age_40_59_ratio": 0.25, "age_60_plus_ratio": 0.08, "household_1_2_ratio": 0.70},
+  {"grid_id": 6, "total_population": 3800, "age_20_39_ratio": 0.30, "age_40_59_ratio": 0.35, "age_60_plus_ratio": 0.22, "household_1_2_ratio": 0.38},
+  {"grid_id": 7, "total_population": 5200, "age_20_39_ratio": 0.48, "age_40_59_ratio": 0.26, "age_60_plus_ratio": 0.09, "household_1_2_ratio": 0.65},
+  {"grid_id": 8, "total_population": 4800, "age_20_39_ratio": 0.44, "age_40_59_ratio": 0.29, "age_60_plus_ratio": 0.11, "household_1_2_ratio": 0.55},
+  {"grid_id": 9, "total_population": 2500, "age_20_39_ratio": 0.32, "age_40_59_ratio": 0.34, "age_60_plus_ratio": 0.20, "household_1_2_ratio": 0.40},
+  {"grid_id": 10, "total_population": 6000, "age_20_39_ratio": 0.40, "age_40_59_ratio": 0.30, "age_60_plus_ratio": 0.14, "household_1_2_ratio": 0.52}
+]

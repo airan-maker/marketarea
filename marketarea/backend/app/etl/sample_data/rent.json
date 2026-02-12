@@ -1,0 +1,12 @@
+[
+  {"grid_id": 1, "rent_per_m2": 85000, "deposit_per_m2": 420000, "rent_price_index": 105.2, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 2, "rent_per_m2": 82000, "deposit_per_m2": 400000, "rent_price_index": 103.8, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 3, "rent_per_m2": 75000, "deposit_per_m2": 380000, "rent_price_index": 101.5, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 4, "rent_per_m2": 68000, "deposit_per_m2": 350000, "rent_price_index": 99.2, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 5, "rent_per_m2": 92000, "deposit_per_m2": 450000, "rent_price_index": 108.5, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 6, "rent_per_m2": 55000, "deposit_per_m2": 280000, "rent_price_index": 95.0, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 7, "rent_per_m2": 78000, "deposit_per_m2": 390000, "rent_price_index": 102.3, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 8, "rent_per_m2": 72000, "deposit_per_m2": 360000, "rent_price_index": 100.8, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 9, "rent_per_m2": 48000, "deposit_per_m2": 240000, "rent_price_index": 92.5, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 10, "rent_per_m2": 95000, "deposit_per_m2": 480000, "rent_price_index": 110.0, "snapshot_quarter": "2024-Q3"}
+]

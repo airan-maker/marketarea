@@ -1,0 +1,12 @@
+[
+  {"grid_id": 1, "total_floating": 15200, "lunch_ratio": 0.38, "dinner_ratio": 0.28, "night_ratio": 0.08, "weekday_avg": 12800, "weekend_avg": 9500},
+  {"grid_id": 2, "total_floating": 14800, "lunch_ratio": 0.36, "dinner_ratio": 0.30, "night_ratio": 0.09, "weekday_avg": 12200, "weekend_avg": 10100},
+  {"grid_id": 3, "total_floating": 13500, "lunch_ratio": 0.35, "dinner_ratio": 0.27, "night_ratio": 0.07, "weekday_avg": 11500, "weekend_avg": 8800},
+  {"grid_id": 4, "total_floating": 12000, "lunch_ratio": 0.33, "dinner_ratio": 0.29, "night_ratio": 0.10, "weekday_avg": 9800, "weekend_avg": 8200},
+  {"grid_id": 5, "total_floating": 16500, "lunch_ratio": 0.40, "dinner_ratio": 0.25, "night_ratio": 0.06, "weekday_avg": 14200, "weekend_avg": 7500},
+  {"grid_id": 6, "total_floating": 11000, "lunch_ratio": 0.32, "dinner_ratio": 0.31, "night_ratio": 0.12, "weekday_avg": 8500, "weekend_avg": 9200},
+  {"grid_id": 7, "total_floating": 10500, "lunch_ratio": 0.30, "dinner_ratio": 0.32, "night_ratio": 0.14, "weekday_avg": 7800, "weekend_avg": 11500},
+  {"grid_id": 8, "total_floating": 9800, "lunch_ratio": 0.28, "dinner_ratio": 0.33, "night_ratio": 0.15, "weekday_avg": 7200, "weekend_avg": 10800},
+  {"grid_id": 9, "total_floating": 8200, "lunch_ratio": 0.34, "dinner_ratio": 0.26, "night_ratio": 0.08, "weekday_avg": 6900, "weekend_avg": 5500},
+  {"grid_id": 10, "total_floating": 18000, "lunch_ratio": 0.37, "dinner_ratio": 0.29, "night_ratio": 0.11, "weekday_avg": 15000, "weekend_avg": 13200}
+]

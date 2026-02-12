@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== Theme Variables ========== */
+:root {
+  --color-primary: #137fec;
+  --bg-base: #f6f7f8;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f1f5f9;
+  --bg-input: #f1f5f9;
+  --bg-overlay: rgba(246, 247, 248, 0.9);
+  --bg-sheet: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  --border-color: #e2e8f0;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --gauge-track: #e2e8f0;
+  --chart-dot-fill: #ffffff;
+  --bar-inactive: #e2e8f0;
+  --map-bg: #e8ecf0;
+  --map-line: rgba(0, 0, 0, 0.06);
+  --map-grid-border: rgba(0, 0, 0, 0.08);
+  --risk-danger-bg: rgba(239, 68, 68, 0.08);
+  --risk-warning-bg: rgba(245, 158, 11, 0.08);
+}
+
+.dark {
+  --bg-base: #101922;
+  --bg-card: #1a2632;
+  --bg-card-alt: #1e2d3d;
+  --bg-input: #1e293b;
+  --bg-overlay: rgba(16, 25, 34, 0.9);
+  --bg-sheet: #0f1923;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --gauge-track: rgba(255, 255, 255, 0.1);
+  --chart-dot-fill: #101922;
+  --bar-inactive: rgba(255, 255, 255, 0.05);
+  --map-bg: #101922;
+  --map-line: rgba(255, 255, 255, 0.04);
+  --map-grid-border: rgba(255, 255, 255, 0.08);
+  --risk-danger-bg: rgba(239, 68, 68, 0.1);
+  --risk-warning-bg: rgba(245, 158, 11, 0.1);
+}
+
+/* ========== Base Styles ========== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+html:not(.dark) {
+  color-scheme: light;
+}
+
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========== Map Styles ========== */
+.map-bg {
+  background-color: var(--map-bg);
+  background-image:
+    linear-gradient(var(--map-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--map-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.grid-highlight {
+  background-color: rgba(19, 127, 236, 0.15);
+  border: 2px solid #137fec;
+  box-shadow: 0 0 20px rgba(19, 127, 236, 0.4);
+}
+
+.heatmap-spot {
+  background: radial-gradient(circle, rgba(19, 127, 236, 0.6) 0%, rgba(19, 127, 236, 0) 70%);
+}
+
+.dark .heatmap-spot { opacity: 1; }
+:root:not(.dark) .heatmap-spot { opacity: 0.5; }
+
+/* ========== Utility Styles ========== */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-top { padding-top: env(safe-area-inset-top, 0px); }
+
+/* ========== Animations ========== */
+@keyframes shimmer {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+.drag-handle { animation: shimmer 2s ease-in-out infinite; }
+
+@keyframes fill-bar {
+  from { width: 0; }
+  to { width: var(--fill-width); }
+}
+.animate-fill { animation: fill-bar 0.8s ease-out forwards; }

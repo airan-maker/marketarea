@@ -1,0 +1,22 @@
+[
+  {"store_name": "스타벅스 강남역점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 강남구 강남대로 390", "lat": 37.4979, "lng": 127.0276, "is_active": 1},
+  {"store_name": "이디야커피 강남점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 강남구 테헤란로 110", "lat": 37.4989, "lng": 127.0283, "is_active": 1},
+  {"store_name": "투썸플레이스 역삼점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 강남구 역삼로 180", "lat": 37.5003, "lng": 127.0365, "is_active": 1},
+  {"store_name": "빽다방 강남역점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 강남구 강남대로 382", "lat": 37.4975, "lng": 127.0279, "is_active": 1},
+  {"store_name": "컴포즈커피 역삼점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 강남구 역삼로 160", "lat": 37.4995, "lng": 127.0358, "is_active": 0},
+  {"store_name": "김밥천국 강남점", "industry_code": "Q01", "industry_name": "한식음식점", "address": "서울 강남구 강남대로 396", "lat": 37.4982, "lng": 127.0271, "is_active": 1},
+  {"store_name": "본죽 강남역점", "industry_code": "Q01", "industry_name": "한식음식점", "address": "서울 강남구 역삼로 170", "lat": 37.4998, "lng": 127.0362, "is_active": 1},
+  {"store_name": "한솥도시락 역삼점", "industry_code": "Q01", "industry_name": "한식음식점", "address": "서울 강남구 테헤란로 120", "lat": 37.4992, "lng": 127.0290, "is_active": 1},
+  {"store_name": "맘스터치 강남점", "industry_code": "Q03", "industry_name": "패스트푸드점", "address": "서울 강남구 강남대로 388", "lat": 37.4977, "lng": 127.0278, "is_active": 1},
+  {"store_name": "맥도날드 강남역점", "industry_code": "Q03", "industry_name": "패스트푸드점", "address": "서울 강남구 강남대로 392", "lat": 37.4980, "lng": 127.0274, "is_active": 1},
+  {"store_name": "올리브영 강남점", "industry_code": "F01", "industry_name": "화장품소매점", "address": "서울 강남구 강남대로 394", "lat": 37.4981, "lng": 127.0273, "is_active": 1},
+  {"store_name": "다이소 역삼점", "industry_code": "F10", "industry_name": "생활잡화소매점", "address": "서울 강남구 역삼로 165", "lat": 37.4996, "lng": 127.0360, "is_active": 1},
+  {"store_name": "GS25 강남역점", "industry_code": "F02", "industry_name": "편의점", "address": "서울 강남구 강남대로 386", "lat": 37.4976, "lng": 127.0277, "is_active": 1},
+  {"store_name": "CU 역삼점", "industry_code": "F02", "industry_name": "편의점", "address": "서울 강남구 테헤란로 115", "lat": 37.4990, "lng": 127.0287, "is_active": 1},
+  {"store_name": "스타벅스 홍대입구점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 마포구 양화로 160", "lat": 37.5573, "lng": 126.9249, "is_active": 1},
+  {"store_name": "이디야커피 홍대점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 마포구 와우산로 78", "lat": 37.5563, "lng": 126.9237, "is_active": 1},
+  {"store_name": "김밥천국 홍대점", "industry_code": "Q01", "industry_name": "한식음식점", "address": "서울 마포구 양화로 162", "lat": 37.5575, "lng": 126.9251, "is_active": 1},
+  {"store_name": "치킨매니아 홍대점", "industry_code": "Q04", "industry_name": "치킨전문점", "address": "서울 마포구 와우산로 80", "lat": 37.5565, "lng": 126.9240, "is_active": 1},
+  {"store_name": "BBQ 홍대점", "industry_code": "Q04", "industry_name": "치킨전문점", "address": "서울 마포구 양화로 155", "lat": 37.5570, "lng": 126.9245, "is_active": 1},
+  {"store_name": "스타벅스 명동점", "industry_code": "Q12", "industry_name": "커피전문점", "address": "서울 중구 명동길 50", "lat": 37.5636, "lng": 126.9850, "is_active": 1}
+]

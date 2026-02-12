@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grid Detailed Data Insights</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal scrolling elements */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-white min-h-screen antialiased selection:bg-primary selection:text-white pb-24">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-white/10">
+<div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+<button class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/5 transition-colors text-gray-600 dark:text-gray-300">
+<span class="material-icons">arrow_back</span>
+</button>
+<div class="text-center">
+<h1 class="text-base font-bold tracking-tight">Grid #8292</h1>
+<p class="text-xs text-primary font-medium flex items-center justify-center gap-1">
+<span class="material-icons text-[10px]">location_on</span>
+                    Yeoksam-dong
+                </p>
+</div>
+<button class="p-2 -mr-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/5 transition-colors text-primary">
+<span class="material-icons">ios_share</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-md mx-auto px-4 pt-20 space-y-4">
+<!-- Last Updated Info -->
+<div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 px-1">
+<span>Analysis Period: Oct 2023</span>
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Live Data</span>
+</div>
+<!-- Summary Score Card -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-5 shadow-sm border border-gray-100 dark:border-white/5 relative overflow-hidden">
+<!-- Decorative background blob -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex justify-between items-start mb-2 relative z-10">
+<div>
+<h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Grid Potential Score</h2>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">88</span>
+<span class="text-sm font-medium text-gray-500">/ 100</span>
+</div>
+</div>
+<div class="bg-green-500/10 text-green-600 dark:text-green-400 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-icons text-sm">trending_up</span>
+                    Top 5%
+                </div>
+</div>
+<p class="text-sm text-gray-600 dark:text-gray-300 relative z-10">
+                Excellent commercial viability compared to neighboring grids in <span class="text-primary font-medium">Gangnam-gu</span>.
+            </p>
+<!-- Mini Sparkline for Score History -->
+<div class="mt-4 h-10 w-full flex items-end justify-between gap-1 opacity-80">
+<div class="w-full bg-primary/20 rounded-t-sm h-[40%]"></div>
+<div class="w-full bg-primary/20 rounded-t-sm h-[55%]"></div>
+<div class="w-full bg-primary/20 rounded-t-sm h-[45%]"></div>
+<div class="w-full bg-primary/20 rounded-t-sm h-[60%]"></div>
+<div class="w-full bg-primary/20 rounded-t-sm h-[75%]"></div>
+<div class="w-full bg-primary/30 rounded-t-sm h-[65%]"></div>
+<div class="w-full bg-primary rounded-t-sm h-[88%] relative">
+<!-- Tooltip dot -->
+<div class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-lg"></div>
+</div>
+</div>
+</div>
+<!-- Health Gauges Row -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Gauge 1: Market Saturation -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Saturation</h3>
+<span class="material-icons text-gray-400 text-sm">info</span>
+</div>
+<div class="relative w-24 h-12 mx-auto overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-24 rounded-full border-[6px] border-gray-200 dark:border-white/10 box-border"></div>
+<div class="absolute top-0 left-0 w-full h-24 rounded-full border-[6px] border-primary border-b-0 border-l-0 box-border origin-center rotate-[-45deg]" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); transform: rotate(130deg);"></div>
+</div>
+<div class="text-center mt-1">
+<span class="text-lg font-bold">Mod.</span>
+<span class="text-xs text-gray-500 block">Competition</span>
+</div>
+</div>
+<!-- Gauge 2: Accessibility -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">Access</h3>
+<span class="material-icons text-gray-400 text-sm">directions_walk</span>
+</div>
+<div class="relative w-24 h-12 mx-auto overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-24 rounded-full border-[6px] border-gray-200 dark:border-white/10 box-border"></div>
+<div class="absolute top-0 left-0 w-full h-24 rounded-full border-[6px] border-green-500 box-border origin-center" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%); transform: rotate(160deg);"></div>
+</div>
+<div class="text-center mt-1">
+<span class="text-lg font-bold text-green-500">High</span>
+<span class="text-xs text-gray-500 block">Transit Score</span>
+</div>
+</div>
+</div>
+<!-- Sales Trend Graph -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-5 border border-gray-100 dark:border-white/5">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="text-sm font-semibold text-gray-900 dark:text-white">Monthly Revenue</h3>
+<p class="text-xs text-gray-500">Last 6 Months Trend</p>
+</div>
+<div class="text-right">
+<div class="text-lg font-bold text-primary">$45.2k</div>
+<div class="text-xs text-green-500 font-medium flex items-center justify-end">
+<span class="material-icons text-[10px]">arrow_upward</span> 12%
+                    </div>
+</div>
+</div>
+<!-- Line Chart Visualization -->
+<div class="relative h-40 w-full">
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between text-xs text-gray-500 dark:text-gray-600 font-mono">
+<div class="w-full border-b border-dashed border-gray-200 dark:border-white/5 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-200 dark:border-white/5 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-200 dark:border-white/5 h-0"></div>
+<div class="w-full border-b border-dashed border-gray-200 dark:border-white/5 h-0"></div>
+</div>
+<!-- Chart Path (SVG) -->
+<svg class="absolute inset-0 w-full h-full overflow-visible" preserveaspectratio="none">
+<defs>
+<lineargradient id="gradientArea" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#137fec" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#137fec" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Area under curve -->
+<path d="M0,100 C40,90 80,110 120,80 S200,60 260,50 S340,30 400,10 V160 H0 Z" fill="url(#gradientArea)"></path>
+<!-- Line -->
+<path d="M0,100 C40,90 80,110 120,80 S200,60 260,50 S340,30 400,10" fill="none" stroke="#137fec" stroke-linecap="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+<!-- Points -->
+<circle cx="120" cy="80" fill="#101922" r="4" stroke="#137fec" stroke-width="2"></circle>
+<circle cx="260" cy="50" fill="#101922" r="4" stroke="#137fec" stroke-width="2"></circle>
+<circle cx="400" cy="10" fill="#137fec" r="4" stroke="#fff" stroke-width="2"></circle>
+</svg>
+</div>
+<!-- X Axis Labels -->
+<div class="flex justify-between mt-2 text-xs text-gray-400 font-mono">
+<span>May</span>
+<span>Jun</span>
+<span>Jul</span>
+<span>Aug</span>
+<span>Sep</span>
+<span>Oct</span>
+</div>
+</div>
+<!-- Demographics Section -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-5 border border-gray-100 dark:border-white/5">
+<h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Visitor Demographics</h3>
+<div class="flex items-center gap-6">
+<!-- Donut Chart -->
+<div class="relative w-32 h-32 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-gray-200 dark:text-white/5" cx="64" cy="64" fill="transparent" r="50" stroke="currentColor" stroke-width="12"></circle>
+<!-- Female segment (60%) -->
+<circle cx="64" cy="64" fill="transparent" r="50" stroke="#137fec" stroke-dasharray="314" stroke-dashoffset="125" stroke-linecap="round" stroke-width="12"></circle>
+<!-- Male segment (40%) -->
+<circle class="opacity-50" cx="64" cy="64" fill="transparent" r="50" stroke="#60a5fa" stroke-dasharray="314" stroke-dashoffset="200" stroke-linecap="round" stroke-width="12" style="transform-origin: center; transform: rotate(216deg);"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xs text-gray-500">Primary</span>
+<span class="text-lg font-bold text-primary">Female</span>
+</div>
+</div>
+<!-- Legend & Details -->
+<div class="flex-1 space-y-3">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-gray-300">Female</span>
+</div>
+<span class="font-bold">60%</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary/40"></span>
+<span class="text-gray-300">Male</span>
+</div>
+<span class="font-bold">40%</span>
+</div>
+<div class="pt-2 border-t border-dashed border-gray-700">
+<div class="text-xs text-gray-500 mb-1">Core Age Group</div>
+<div class="flex items-center gap-2">
+<span class="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-semibold">20s</span>
+<span class="bg-primary/20 text-primary px-2 py-0.5 rounded text-xs font-semibold">30s</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Peak Traffic Hours -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl p-5 border border-gray-100 dark:border-white/5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-sm font-semibold text-gray-900 dark:text-white">Peak Foot Traffic</h3>
+<span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded">18:00 - 20:00</span>
+</div>
+<div class="h-32 flex items-end justify-between gap-1.5 pt-4">
+<!-- Bars representing 24h cycle, simplified -->
+<div class="w-full bg-gray-200 dark:bg-white/5 rounded-t-sm h-[20%] group relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">06</div>
+</div>
+<div class="w-full bg-gray-200 dark:bg-white/5 rounded-t-sm h-[30%]"></div>
+<div class="w-full bg-gray-200 dark:bg-white/5 rounded-t-sm h-[45%]"></div>
+<div class="w-full bg-primary/40 rounded-t-sm h-[60%]"></div>
+<div class="w-full bg-primary/60 rounded-t-sm h-[50%]"></div>
+<div class="w-full bg-primary/40 rounded-t-sm h-[65%]"></div>
+<div class="w-full bg-primary rounded-t-sm h-[90%] shadow-[0_0_10px_rgba(19,127,236,0.3)]"></div>
+<div class="w-full bg-primary/80 rounded-t-sm h-[80%]"></div>
+<div class="w-full bg-primary/30 rounded-t-sm h-[55%]"></div>
+<div class="w-full bg-gray-200 dark:bg-white/5 rounded-t-sm h-[35%]"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-gray-400 font-mono uppercase">
+<span>6am</span>
+<span>12pm</span>
+<span>6pm</span>
+<span>12am</span>
+</div>
+</div>
+<!-- Nearby POIs List -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl overflow-hidden border border-gray-100 dark:border-white/5">
+<div class="p-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
+<h3 class="text-sm font-semibold text-gray-900 dark:text-white">Major POIs in Grid</h3>
+<a class="text-xs text-primary hover:text-primary/80" href="#">View Map</a>
+</div>
+<ul>
+<li class="flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer border-b border-gray-100 dark:border-white/5 last:border-0">
+<div class="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500 flex-shrink-0">
+<span class="material-icons text-xl">coffee</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium truncate">Blue Bottle Coffee</p>
+<p class="text-xs text-gray-500">Cafe • Very High Traffic</p>
+</div>
+<div class="text-right">
+<span class="block text-sm font-bold text-gray-900 dark:text-white">#1</span>
+</div>
+</li>
+<li class="flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500 flex-shrink-0">
+<span class="material-icons text-xl">shopping_bag</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-medium truncate">Lotte Department Store</p>
+<p class="text-xs text-gray-500">Retail • High Spend</p>
+</div>
+<div class="text-right">
+<span class="block text-sm font-bold text-gray-900 dark:text-white">#2</span>
+</div>
+</li>
+</ul>
+</div>
+<!-- Bottom padding for sticky button -->
+<div class="h-6"></div>
+</main>
+<!-- Sticky Bottom Action -->
+<div class="fixed bottom-0 left-0 w-full p-4 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-t border-gray-200 dark:border-white/10 z-40">
+<div class="max-w-md mx-auto flex gap-3">
+<button class="flex-1 bg-white dark:bg-[#2a3642] text-gray-900 dark:text-white border border-gray-300 dark:border-white/10 rounded-lg h-12 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+<span class="material-icons text-base">bookmark_border</span>
+                Save
+            </button>
+<button class="flex-[2] bg-primary text-white rounded-lg h-12 font-semibold text-sm shadow-lg shadow-primary/30 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+<span class="material-icons text-base">compare_arrows</span>
+                Compare Neighbors
+            </button>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,12 @@
+[
+  {"grid_id": 1, "industry_code": "Q12", "quarterly_sales": 185000000, "quarterly_count": 28500, "avg_ticket_price": 6491, "sales_per_store": 46250000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 2, "industry_code": "Q12", "quarterly_sales": 172000000, "quarterly_count": 26200, "avg_ticket_price": 6565, "sales_per_store": 43000000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 3, "industry_code": "Q12", "quarterly_sales": 98000000, "quarterly_count": 15800, "avg_ticket_price": 6203, "sales_per_store": 49000000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 1, "industry_code": "Q01", "quarterly_sales": 210000000, "quarterly_count": 35000, "avg_ticket_price": 6000, "sales_per_store": 70000000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 2, "industry_code": "Q01", "quarterly_sales": 155000000, "quarterly_count": 24500, "avg_ticket_price": 6327, "sales_per_store": 77500000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 1, "industry_code": "Q03", "quarterly_sales": 145000000, "quarterly_count": 18000, "avg_ticket_price": 8056, "sales_per_store": 72500000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 1, "industry_code": "F02", "quarterly_sales": 320000000, "quarterly_count": 95000, "avg_ticket_price": 3368, "sales_per_store": 160000000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 7, "industry_code": "Q12", "quarterly_sales": 165000000, "quarterly_count": 25000, "avg_ticket_price": 6600, "sales_per_store": 82500000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 7, "industry_code": "Q04", "quarterly_sales": 120000000, "quarterly_count": 8500, "avg_ticket_price": 14118, "sales_per_store": 60000000, "snapshot_quarter": "2024-Q3"},
+  {"grid_id": 10, "industry_code": "Q12", "quarterly_sales": 220000000, "quarterly_count": 32000, "avg_ticket_price": 6875, "sales_per_store": 55000000, "snapshot_quarter": "2024-Q3"}
+]

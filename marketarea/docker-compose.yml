@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: marketarea-db
+    environment:
+      POSTGRES_DB: marketarea
+      POSTGRES_USER: marketarea
+      POSTGRES_PASSWORD: marketarea1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marketarea"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
