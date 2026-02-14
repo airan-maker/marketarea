@@ -1,49 +1,40 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  const backendUrl =
-    process.env.BACKEND_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:8000";
+export const dynamic = "force-dynamic";
 
+export async function GET() {
+  const rawBackendUrl = process.env.BACKEND_URL;
+  const rawApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const resolvedUrl = rawBackendUrl || rawApiUrl || "http://localhost:8000";
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 
   // Test backend connectivity
-  let backendStatus = "unknown";
+  let backendHealth = "unknown";
   let backendDetail = "";
   try {
-    const res = await fetch(`${backendUrl}/health`, { signal: AbortSignal.timeout(5000) });
-    backendStatus = res.ok ? "connected" : `error (${res.status})`;
+    const res = await fetch(`${resolvedUrl}/health`, {
+      signal: AbortSignal.timeout(5000),
+      cache: "no-store",
+    });
+    backendHealth = res.ok ? "connected" : `error (${res.status})`;
     backendDetail = await res.text().catch(() => "");
   } catch (e) {
-    backendStatus = "unreachable";
+    backendHealth = "unreachable";
     backendDetail = String(e);
   }
 
-  // Test backend API
-  let apiStatus = "unknown";
-  let apiDetail = "";
-  try {
-    const res = await fetch(`${backendUrl}/api/industries`, { signal: AbortSignal.timeout(5000) });
-    apiStatus = res.ok ? "connected" : `error (${res.status})`;
-    apiDetail = await res.text().catch(() => "");
-    if (apiDetail.length > 200) apiDetail = apiDetail.substring(0, 200) + "...";
-  } catch (e) {
-    apiStatus = "unreachable";
-    apiDetail = String(e);
-  }
-
   return NextResponse.json({
-    env: {
-      BACKEND_URL: backendUrl,
-      GOOGLE_MAPS_KEY: googleMapsKey ? `${googleMapsKey.substring(0, 10)}...` : "NOT SET",
-      NODE_ENV: process.env.NODE_ENV,
+    env_raw: {
+      BACKEND_URL: rawBackendUrl ?? "(not set)",
+      NEXT_PUBLIC_API_URL: rawApiUrl ?? "(not set)",
+      NEXT_PUBLIC_GOOGLE_MAPS_KEY: googleMapsKey ? `${googleMapsKey.substring(0, 10)}...` : "(not set)",
+      NODE_ENV: process.env.NODE_ENV ?? "(not set)",
     },
-    backend: {
-      health: backendStatus,
-      healthDetail: backendDetail,
-      api: apiStatus,
-      apiDetail: apiDetail,
-    },
+    resolved_backend_url: resolvedUrl,
+    backend_health: backendHealth,
+    backend_detail: backendDetail,
+    hint: rawBackendUrl
+      ? "BACKEND_URL is set correctly"
+      : "BACKEND_URL is NOT set. Add it in Railway > Frontend service > Variables > BACKEND_URL = https://backend-production-15f8.up.railway.app",
   });
 }
