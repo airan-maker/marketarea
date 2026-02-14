@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     KOSIS_API_KEY: str = ""
     USE_SAMPLE_DATA: bool = False
 
-    ALLOWED_ORIGINS: str = "http://localhost:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,https://*.up.railway.app"
     PORT: int = 8000
     NEXTAUTH_SECRET: str = ""
 

@@ -156,7 +156,7 @@ export default function HomePage() {
       {/* Sidebar */}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Real Kakao Map */}
+      {/* Google Map */}
       <div className="absolute inset-0 z-0">
         <Map center={center} radius={radius} onMapClick={handleMapClick} />
       </div>

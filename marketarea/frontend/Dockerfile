@@ -12,10 +12,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build args become env vars during build
-ARG NEXT_PUBLIC_API_URL
+# Build args for client-side env vars (baked at build time)
 ARG NEXT_PUBLIC_GOOGLE_MAPS_KEY
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_GOOGLE_MAPS_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_KEY}
 
 RUN npm run build
@@ -38,5 +36,8 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# BACKEND_URL is set at runtime via Railway env vars
+# e.g. BACKEND_URL=http://backend.railway.internal:8000
 
 CMD ["node", "server.js"]
