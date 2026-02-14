@@ -28,5 +28,29 @@ print('Database tables created/verified')
 engine.dispose()
 "
 
+echo "=== Running ETL (if needed) ==="
+python -c "
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from app.config import get_settings
+
+settings = get_settings()
+sync_url = settings.get_sync_db_url()
+engine = create_engine(sync_url, echo=False)
+Session = sessionmaker(bind=engine)
+
+with Session() as session:
+    count = session.execute(text('SELECT COUNT(*) FROM grid_master')).scalar()
+    if count == 0:
+        print('No grid data found. Running ETL...')
+        session.close()
+        engine.dispose()
+        import subprocess, sys
+        subprocess.run([sys.executable, 'scripts/run_etl.py'], check=True)
+    else:
+        print(f'Grid data exists ({count:,} rows). Skipping ETL.')
+        engine.dispose()
+"
+
 echo "=== Starting uvicorn ==="
 exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
