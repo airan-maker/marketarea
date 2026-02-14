@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+function getBackendUrl() {
+  return process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+}
 
 export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
   return proxy(req, params.path);
@@ -19,13 +21,18 @@ export async function DELETE(req: NextRequest, { params }: { params: { path: str
 }
 
 async function proxy(req: NextRequest, pathSegments: string[]) {
+  const backendUrl = getBackendUrl();
   const path = pathSegments.join("/");
   const url = new URL(req.url);
-  const target = `${BACKEND_URL}/api/${path}${url.search}`;
+  const target = `${backendUrl}/api/${path}${url.search}`;
 
-  const headers: Record<string, string> = {
-    "Content-Type": req.headers.get("content-type") || "application/json",
-  };
+  console.log(`[Proxy] ${req.method} ${target}`);
+
+  const headers: Record<string, string> = {};
+  const contentType = req.headers.get("content-type");
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
 
   const authHeader = req.headers.get("authorization");
   if (authHeader) {
@@ -50,9 +57,14 @@ async function proxy(req: NextRequest, pathSegments: string[]) {
       headers: { "Content-Type": res.headers.get("content-type") || "application/json" },
     });
   } catch (e) {
-    console.error(`[Proxy] Failed to reach backend: ${target}`, e);
+    console.error(`[Proxy] Failed: ${target}`, e);
     return NextResponse.json(
-      { error: "Backend unreachable", detail: String(e), target },
+      {
+        error: "Backend unreachable",
+        detail: String(e),
+        target,
+        hint: "Check BACKEND_URL env var in Railway frontend service",
+      },
       { status: 502 }
     );
   }
