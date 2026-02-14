@@ -32,6 +32,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet"
         />
+        <script
+          type="text/javascript"
+          src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&libraries=services&autoload=false`}
+        />
       </head>
       <body className="font-display overflow-hidden h-[100dvh] w-full" style={{ backgroundColor: "var(--bg-base)", color: "var(--text-primary)" }}>
         <AuthProvider>

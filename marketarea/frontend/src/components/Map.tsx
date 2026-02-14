@@ -127,8 +127,8 @@ export default function Map({ center, radius, onMapClick }: MapProps) {
   if (!sdkReady) {
     return (
       <div
-        className="w-full h-full rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-100 text-gray-500 flex-col gap-2"
-        style={{ minHeight: "500px" }}
+        className="w-full h-full overflow-hidden flex items-center justify-center flex-col gap-2"
+        style={{ backgroundColor: "var(--bg-base)", color: "var(--text-muted)" }}
       >
         {sdkError ? (
           <>
@@ -145,8 +145,7 @@ export default function Map({ center, radius, onMapClick }: MapProps) {
   return (
     <div
       ref={mapRef}
-      className="w-full h-full rounded-lg overflow-hidden border border-gray-200"
-      style={{ minHeight: "500px" }}
+      className="w-full h-full overflow-hidden"
     />
   );
 }

@@ -8,6 +8,7 @@ import MetricCard from "./MetricCard";
 interface BottomSheetProps {
   result: AnalysisResult | null;
   loading: boolean;
+  error?: string | null;
   address: string;
   industryName: string;
   onViewDetail: () => void;
@@ -28,6 +29,7 @@ function competitionLevel(index: number): { text: string; color: string } {
 export default function BottomSheet({
   result,
   loading,
+  error,
   address,
   industryName,
   onViewDetail,
@@ -60,6 +62,29 @@ export default function BottomSheet({
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-sm" style={{ color: "var(--text-muted)" }}>상권 분석 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div
+        className="absolute bottom-0 left-0 right-0 z-30 rounded-t-3xl shadow-sheet border-t animate-slide-up"
+        style={{ backgroundColor: "var(--bg-sheet)", borderColor: "var(--border-color)" }}
+      >
+        <div className="w-full flex justify-center pt-3 pb-1">
+          <div className="w-12 h-1.5 rounded-full" style={{ backgroundColor: "var(--bg-card-alt)" }} />
+        </div>
+        <div className="px-6 py-4 pb-8">
+          <div className="flex items-center justify-center h-24">
+            <div className="text-center">
+              <span className="material-icons text-3xl mb-2 block text-red-400">error_outline</span>
+              <p className="text-sm text-red-400 font-medium">분석 오류</p>
+              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>{error}</p>
+            </div>
           </div>
         </div>
       </div>

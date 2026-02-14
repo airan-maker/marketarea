@@ -7,11 +7,12 @@ import { runAnalysis } from "@/lib/api";
 import { saveAnalysis } from "@/lib/saved-api";
 import SearchOverlay from "@/components/SearchOverlay";
 import FilterChips from "@/components/FilterChips";
-import MapBackground from "@/components/MapBackground";
+import Map from "@/components/Map";
 import BottomSheet from "@/components/BottomSheet";
 import GridDetailView from "@/components/GridDetailView";
 import ThemeToggle from "@/components/ThemeToggle";
-import AuthButton from "@/components/AuthButton";
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 import SaveAnalysisModal from "@/components/SaveAnalysisModal";
 
 const FALLBACK_INDUSTRIES: IndustryItem[] = [
@@ -33,10 +34,12 @@ export default function HomePage() {
   const [address, setAddress] = useState("강남역");
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const industryName = useMemo(() => {
     const found = FALLBACK_INDUSTRIES.find((i) => i.code === industryCode);
@@ -48,11 +51,15 @@ export default function HomePage() {
       if (!code) return;
       setLoading(true);
       setIsSaved(false);
+      setError(null);
       try {
         const res = await runAnalysis({ lat, lng, radius: r, industry_code: code });
         setResult(res);
       } catch (e) {
         console.error("Analysis failed:", e);
+        const msg = e instanceof Error ? e.message : "분석 중 오류가 발생했습니다";
+        setError(msg);
+        setResult(null);
       } finally {
         setLoading(false);
       }
@@ -64,6 +71,17 @@ export default function HomePage() {
     (lat: number, lng: number, addr: string) => {
       setCenter({ lat, lng });
       setAddress(addr);
+      if (industryCode) {
+        executeAnalysis(lat, lng, radius, industryCode);
+      }
+    },
+    [industryCode, radius, executeAnalysis]
+  );
+
+  const handleMapClick = useCallback(
+    (lat: number, lng: number) => {
+      setCenter({ lat, lng });
+      setAddress(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
       if (industryCode) {
         executeAnalysis(lat, lng, radius, industryCode);
       }
@@ -132,22 +150,24 @@ export default function HomePage() {
 
   return (
     <div className="relative h-[100dvh] w-full overflow-hidden" style={{ backgroundColor: "var(--bg-base)" }}>
-      {/* Map Background */}
-      <MapBackground
-        gridLabel={`${address.charAt(0)}-${Math.floor(Math.random() * 20 + 1)}`}
-        showHighlight={!!result}
-      />
+      {/* Header */}
+      <Header onMenuClick={() => setSidebarOpen(true)} />
 
-      {/* Top Overlay: Search + Filters */}
+      {/* Sidebar */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Real Kakao Map */}
+      <div className="absolute inset-0 z-0">
+        <Map center={center} radius={radius} onMapClick={handleMapClick} />
+      </div>
+
+      {/* Top Overlay: Search + Filters (below header) */}
       <div
-        className="absolute top-0 left-0 right-0 z-20 pt-12 pb-4 px-4 safe-top"
-        style={{ background: `linear-gradient(to bottom, var(--bg-base) 0%, var(--bg-overlay) 70%, transparent 100%)` }}
+        className="absolute top-14 left-0 right-0 z-20 pt-3 pb-4 px-4"
+        style={{ background: "linear-gradient(to bottom, var(--bg-base) 0%, var(--bg-overlay) 60%, transparent 100%)" }}
       >
-        <div className="mb-3 flex items-center gap-2">
-          <div className="flex-1">
-            <SearchOverlay onSearch={handleSearch} address={address} />
-          </div>
-          <AuthButton />
+        <div className="mb-3">
+          <SearchOverlay onSearch={handleSearch} address={address} />
         </div>
         <FilterChips
           radius={radius}
@@ -158,7 +178,7 @@ export default function HomePage() {
       </div>
 
       {/* Floating Map Controls */}
-      <div className="absolute right-4 top-[240px] z-10 flex flex-col space-y-3">
+      <div className="absolute right-4 top-[220px] z-10 flex flex-col space-y-3">
         <button
           className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center border active:opacity-80 transition-colors"
           style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-color)", color: "var(--text-primary)" }}
@@ -171,7 +191,6 @@ export default function HomePage() {
         >
           <span className="material-icons text-xl">my_location</span>
         </button>
-        {/* Theme Toggle */}
         <ThemeToggle />
       </div>
 
@@ -179,6 +198,7 @@ export default function HomePage() {
       <BottomSheet
         result={result}
         loading={loading}
+        error={error}
         address={address}
         industryName={industryName}
         onViewDetail={() => setShowDetail(true)}
