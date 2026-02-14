@@ -1,3 +1,2 @@
-interface Window {
-  kakao: any;
-}
+// Google Maps types provided by @types/google.maps
+export {};

@@ -2,6 +2,20 @@
 
 import { useState, useCallback } from "react";
 
+const PRESETS: Record<string, [number, number]> = {
+  "강남역": [37.4979, 127.0276],
+  "역삼": [37.5007, 127.0365],
+  "홍대입구": [37.5573, 126.9249],
+  "명동": [37.5636, 126.985],
+  "잠실": [37.5133, 127.1001],
+  "건대입구": [37.5404, 127.0693],
+  "이태원": [37.5345, 126.9946],
+  "신촌": [37.5551, 126.9368],
+  "종로": [37.5700, 126.9822],
+  "여의도": [37.5219, 126.9245],
+  "서울역": [37.5547, 126.9707],
+};
+
 interface SearchOverlayProps {
   onSearch: (lat: number, lng: number, address: string) => void;
   address?: string;
@@ -14,39 +28,33 @@ export default function SearchOverlay({ onSearch, address = "" }: SearchOverlayP
   const handleSearch = useCallback(() => {
     if (!query.trim()) return;
 
-    if (typeof window !== "undefined" && window.kakao?.maps?.services) {
+    if (typeof google !== "undefined" && google.maps) {
       setLoading(true);
-      const geocoder = new window.kakao.maps.services.Geocoder();
-      geocoder.addressSearch(query, (result: any[], status: string) => {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: query, region: "kr" }, (results, status) => {
         setLoading(false);
-        if (status === window.kakao.maps.services.Status.OK && result.length > 0) {
-          const { y, x } = result[0];
-          onSearch(parseFloat(y), parseFloat(x), result[0].address_name || query);
-        }
-      });
-    } else {
-      const presets: Record<string, [number, number]> = {
-        "강남역": [37.4979, 127.0276],
-        "역삼": [37.5007, 127.0365],
-        "홍대입구": [37.5573, 126.9249],
-        "명동": [37.5636, 126.985],
-        "잠실": [37.5133, 127.1001],
-        "건대입구": [37.5404, 127.0693],
-        "이태원": [37.5345, 126.9946],
-        "신촌": [37.5551, 126.9368],
-        "종로": [37.5700, 126.9822],
-        "여의도": [37.5219, 126.9245],
-        "서울역": [37.5547, 126.9707],
-      };
-
-      for (const [name, coords] of Object.entries(presets)) {
-        if (query.includes(name)) {
-          onSearch(coords[0], coords[1], name);
+        if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
+          const loc = results[0].geometry.location;
+          const addr = results[0].formatted_address || query;
+          onSearch(loc.lat(), loc.lng(), addr);
           return;
         }
-      }
+        // Geocoder 실패 시 preset fallback
+        searchPreset();
+      });
+    } else {
+      searchPreset();
     }
   }, [query, onSearch]);
+
+  function searchPreset() {
+    for (const [name, coords] of Object.entries(PRESETS)) {
+      if (query.includes(name)) {
+        onSearch(coords[0], coords[1], name);
+        return;
+      }
+    }
+  }
 
   return (
     <div className="relative">
