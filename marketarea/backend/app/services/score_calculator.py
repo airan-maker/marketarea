@@ -1,9 +1,10 @@
-"""점수 계산 엔진 — 건강도, 경쟁지수, 생존확률 등."""
+"""점수 계산 엔진 — 건강도, 경쟁지수, 생존확률 등 (벌크 SQL 최적화)."""
 import json
-import math
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from app.etl.logger import get_etl_logger
 
+logger = get_etl_logger("score_calculator")
 
 # 업종별 평균 폐업률 (샘플 기준값)
 DEFAULT_CLOSURE_RATES = {
@@ -16,55 +17,79 @@ DEFAULT_CLOSURE_RATES = {
     "F10": 0.14,  # 생활잡화
 }
 
-# Health Score 가중치
-WEIGHTS = {
-    "competition": -0.25,  # 경쟁 높을수록 감점
-    "survival": 0.20,
-    "floating": 0.20,
-    "population": 0.15,
-    "sales": 0.15,
-    "rent": -0.05,  # 임대료 높을수록 감점
-}
+DEFAULT_CLOSURE_RATE = 0.20
 
 
 def compute_all_scores(session: Session) -> int:
-    """모든 Grid × 업종 조합에 대해 점수를 계산한다."""
+    """벌크 SQL로 모든 Grid x 업종 점수를 계산한다.
+
+    기존: 56,000 grids x N industries = 수십만 개별 쿼리
+    개선: store_stats에 존재하는 (grid_id, industry_code) 쌍만 대상으로
+          단일 쿼리에서 모든 stats를 JOIN → Python에서 점수 계산 → 벌크 INSERT
+    """
     session.execute(text("DELETE FROM grid_score"))
 
-    # 업종 목록 추출
-    industries = session.execute(text(
-        "SELECT DISTINCT industry_code FROM grid_store_stats"
-    )).fetchall()
-
-    grids = session.execute(text(
-        "SELECT id FROM grid_master"
-    )).fetchall()
-
-    # 서울 전체 평균값 계산
+    # 1) 서울 전체 평균값 (단일 쿼리)
     seoul_avg = _compute_seoul_averages(session)
+    logger.info("Seoul averages: %s", seoul_avg)
 
-    count = 0
-    for (grid_id,) in grids:
-        for (industry_code,) in industries:
-            score = _compute_grid_score(session, grid_id, industry_code, seoul_avg)
-            if score:
-                session.execute(text("""
-                    INSERT INTO grid_score
-                        (grid_id, industry_code, health_score, competition_index,
-                         survival_probability, sales_estimate_low, sales_estimate_high,
-                         population_score, floating_score, rent_score,
-                         risk_flags, snapshot_quarter)
-                    VALUES
-                        (:gid, :ic, :hs, :ci, :sp, :sl, :sh, :ps, :fs, :rs, :rf, :q)
-                """), score)
-                count += 1
+    # 2) store_stats에 존재하는 (grid_id, industry_code) 쌍에 대해
+    #    모든 stats를 LEFT JOIN한 결과를 한 번에 가져옴
+    rows = session.execute(text("""
+        SELECT
+            gs.grid_id,
+            gs.industry_code,
+            gs.store_count,
+            COALESCE(gs.closure_rate, :default_closure) as closure_rate,
+            COALESCE(gf.total_floating, 0) as total_floating,
+            COALESCE(gp.total_population, 0) as total_population,
+            COALESCE(gp.age_20_39_ratio, 0.3) as age_20_39_ratio,
+            COALESCE(gsa.quarterly_sales, 0) as quarterly_sales,
+            COALESCE(gsa.avg_ticket_price, 0) as avg_ticket_price,
+            COALESCE(gr.rent_per_m2, 0) as rent_per_m2
+        FROM grid_store_stats gs
+        LEFT JOIN grid_floating_stats gf ON gf.grid_id = gs.grid_id
+        LEFT JOIN grid_population_stats gp ON gp.grid_id = gs.grid_id
+        LEFT JOIN (
+            SELECT DISTINCT ON (grid_id, industry_code)
+                grid_id, industry_code, quarterly_sales, avg_ticket_price
+            FROM grid_sales_stats
+            ORDER BY grid_id, industry_code, snapshot_quarter DESC
+        ) gsa ON gsa.grid_id = gs.grid_id AND gsa.industry_code = gs.industry_code
+        LEFT JOIN (
+            SELECT DISTINCT ON (grid_id)
+                grid_id, rent_per_m2
+            FROM grid_rent_stats
+            ORDER BY grid_id, snapshot_quarter DESC
+        ) gr ON gr.grid_id = gs.grid_id
+    """), {"default_closure": DEFAULT_CLOSURE_RATE}).fetchall()
+
+    if not rows:
+        logger.warning("No store_stats rows found, nothing to score")
+        return 0
+
+    logger.info("Computing scores for %d (grid, industry) pairs", len(rows))
+
+    # 3) Python에서 점수 계산 후 벌크 INSERT
+    batch = []
+    for row in rows:
+        score = _compute_score(row, seoul_avg)
+        batch.append(score)
+
+        if len(batch) >= 1000:
+            _insert_batch(session, batch)
+            batch.clear()
+
+    if batch:
+        _insert_batch(session, batch)
 
     session.commit()
-    return count
+    logger.info("Computed %d grid scores", len(rows))
+    return len(rows)
 
 
 def _compute_seoul_averages(session: Session) -> dict:
-    """서울 전체 평균 통계."""
+    """서울 전체 평균 통계 — 단일 쿼리들."""
     avg_stores = session.execute(text(
         "SELECT AVG(store_count) FROM grid_store_stats"
     )).scalar() or 1.0
@@ -94,60 +119,18 @@ def _compute_seoul_averages(session: Session) -> dict:
     }
 
 
-def _compute_grid_score(
-    session: Session, grid_id: int, industry_code: str, seoul_avg: dict
-) -> dict | None:
-    """단일 Grid × 업종에 대한 점수 계산."""
-    # 점포 통계
-    store_row = session.execute(text("""
-        SELECT store_count, closure_rate FROM grid_store_stats
-        WHERE grid_id = :gid AND industry_code = :ic
-    """), {"gid": grid_id, "ic": industry_code}).fetchone()
+def _compute_score(row, seoul_avg: dict) -> dict:
+    """단일 행에 대한 점수 계산."""
+    grid_id = row[0]
+    industry_code = row[1]
+    store_count = row[2] or 0
+    closure_rate = row[3] or DEFAULT_CLOSURE_RATE
+    total_floating = row[4] or 0
+    total_pop = row[5] or 0
+    quarterly_sales = row[7] or 0
+    rent_per_m2 = row[9] or 0
 
-    store_count = store_row[0] if store_row else 0
-    closure_rate = store_row[1] if store_row and store_row[1] else \
-        DEFAULT_CLOSURE_RATES.get(industry_code, 0.20)
-
-    # 유동인구
-    floating_row = session.execute(text("""
-        SELECT total_floating, lunch_ratio, dinner_ratio
-        FROM grid_floating_stats WHERE grid_id = :gid
-        ORDER BY snapshot_date DESC LIMIT 1
-    """), {"gid": grid_id}).fetchone()
-
-    total_floating = floating_row[0] if floating_row else 0
-
-    # 거주인구
-    pop_row = session.execute(text("""
-        SELECT total_population, age_20_39_ratio, household_1_2_ratio
-        FROM grid_population_stats WHERE grid_id = :gid
-        ORDER BY snapshot_date DESC LIMIT 1
-    """), {"gid": grid_id}).fetchone()
-
-    total_pop = pop_row[0] if pop_row else 0
-
-    # 매출
-    sales_row = session.execute(text("""
-        SELECT quarterly_sales, avg_ticket_price, sales_per_store
-        FROM grid_sales_stats
-        WHERE grid_id = :gid AND industry_code = :ic
-        ORDER BY snapshot_quarter DESC LIMIT 1
-    """), {"gid": grid_id, "ic": industry_code}).fetchone()
-
-    quarterly_sales = sales_row[0] if sales_row else 0
-
-    # 임대료
-    rent_row = session.execute(text("""
-        SELECT rent_per_m2, rent_price_index
-        FROM grid_rent_stats WHERE grid_id = :gid
-        ORDER BY snapshot_quarter DESC LIMIT 1
-    """), {"gid": grid_id}).fetchone()
-
-    rent_per_m2 = rent_row[0] if rent_row else 0
-
-    # === 지표 계산 ===
-
-    # Competition Index = 동일업종 점포수 / 서울평균
+    # Competition Index
     competition_index = store_count / seoul_avg["avg_stores"] if seoul_avg["avg_stores"] else 0
 
     # Survival Probability
@@ -157,7 +140,7 @@ def _compute_grid_score(
     competition_adj = -0.08 if competition_index > 1.5 else (0.03 if competition_index < 0.5 else 0)
     survival_probability = max(0.1, min(0.95, base_survival + floating_adj + pop_adj + competition_adj))
 
-    # Z-score 기반 개별 점수 (0~100 정규화)
+    # Z-score 기반 개별 점수
     def z_to_score(value: float, avg: float, higher_is_better: bool = True) -> float:
         if avg == 0:
             return 50
@@ -173,23 +156,30 @@ def _compute_grid_score(
     sales_score = z_to_score(quarterly_sales, seoul_avg["avg_sales"])
 
     # Health Score (가중합)
+    weights = {
+        "competition": -0.25,
+        "survival": 0.20,
+        "floating": 0.20,
+        "population": 0.15,
+        "sales": 0.15,
+        "rent": -0.05,
+    }
     health_score = (
-        (100 - min(competition_index * 50, 100)) * abs(WEIGHTS["competition"])
-        + survival_probability * 100 * WEIGHTS["survival"]
-        + floating_score * WEIGHTS["floating"]
-        + population_score * WEIGHTS["population"]
-        + sales_score * WEIGHTS["sales"]
-        + rent_score * abs(WEIGHTS["rent"])
-    ) / sum(abs(v) for v in WEIGHTS.values())
-
+        (100 - min(competition_index * 50, 100)) * abs(weights["competition"])
+        + survival_probability * 100 * weights["survival"]
+        + floating_score * weights["floating"]
+        + population_score * weights["population"]
+        + sales_score * weights["sales"]
+        + rent_score * abs(weights["rent"])
+    ) / sum(abs(v) for v in weights.values())
     health_score = max(0, min(100, health_score))
 
-    # 매출 추정 (월 기준)
+    # 매출 추정
     monthly_sales = quarterly_sales / 3 if quarterly_sales else 0
-    sales_estimate_low = monthly_sales * 0.7 / 10000   # 만원 단위
+    sales_estimate_low = monthly_sales * 0.7 / 10000
     sales_estimate_high = monthly_sales * 1.3 / 10000
 
-    # 리스크 경고
+    # 리스크
     risks = []
     if competition_index > 2.0:
         risks.append({"level": "danger", "message": "과밀 상권: 동일 업종 경쟁이 매우 치열합니다"})
@@ -216,3 +206,17 @@ def _compute_grid_score(
         "rf": json.dumps(risks, ensure_ascii=False),
         "q": "2024-Q3",
     }
+
+
+def _insert_batch(session: Session, batch: list[dict]):
+    """점수 배치 INSERT."""
+    for score in batch:
+        session.execute(text("""
+            INSERT INTO grid_score
+                (grid_id, industry_code, health_score, competition_index,
+                 survival_probability, sales_estimate_low, sales_estimate_high,
+                 population_score, floating_score, rent_score,
+                 risk_flags, snapshot_quarter)
+            VALUES
+                (:gid, :ic, :hs, :ci, :sp, :sl, :sh, :ps, :fs, :rs, :rf, :q)
+        """), score)

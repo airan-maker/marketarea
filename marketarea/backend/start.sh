@@ -29,7 +29,13 @@ engine.dispose()
 "
 
 echo "=== Running ETL (if needed) ==="
-python -c "
+
+# FORCE_ETL=true 이면 무조건 재실행
+if [ "${FORCE_ETL}" = "true" ] || [ "${FORCE_ETL}" = "1" ]; then
+    echo "FORCE_ETL is set. Running full ETL..."
+    python scripts/run_etl.py --force
+else
+    python -c "
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from app.config import get_settings
@@ -40,17 +46,20 @@ engine = create_engine(sync_url, echo=False)
 Session = sessionmaker(bind=engine)
 
 with Session() as session:
-    count = session.execute(text('SELECT COUNT(*) FROM grid_master')).scalar()
-    if count == 0:
-        print('No grid data found. Running ETL...')
+    grid_count = session.execute(text('SELECT COUNT(*) FROM grid_master')).scalar()
+    store_count = session.execute(text('SELECT COUNT(*) FROM grid_store_stats')).scalar()
+
+    if grid_count == 0 or store_count == 0:
+        print(f'Data missing (grids={grid_count}, store_stats={store_count}). Running ETL...')
         session.close()
         engine.dispose()
         import subprocess, sys
         subprocess.run([sys.executable, 'scripts/run_etl.py'], check=True)
     else:
-        print(f'Grid data exists ({count:,} rows). Skipping ETL.')
+        print(f'Data exists (grids={grid_count:,}, store_stats={store_count:,}). Skipping ETL.')
         engine.dispose()
 "
+fi
 
 echo "=== Starting uvicorn ==="
 exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

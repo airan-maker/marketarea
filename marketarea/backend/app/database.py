@@ -16,6 +16,10 @@ class Base(DeclarativeBase):
     pass
 
 
+def get_db_engine():
+    return engine
+
+
 async def get_db():
     async with async_session() as session:
         yield session

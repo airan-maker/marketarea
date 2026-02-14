@@ -3,26 +3,29 @@ import json
 from datetime import date
 from pathlib import Path
 
-import httpx
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.etl.api_client import fetch_json
+from app.etl.logger import get_etl_logger
 
+logger = get_etl_logger("store_collector")
 SAMPLE_DIR = Path(__file__).parent / "sample_data"
 
 
 def collect_stores(session: Session) -> int:
     settings = get_settings()
     if settings.should_use_sample or not settings.has_key("data_go_kr"):
+        logger.info("Using sample data for stores")
         return _load_sample(session)
+    logger.info("Collecting stores from API")
     return _collect_from_api(session, settings.DATA_GO_KR_API_KEY)
 
 
 def _collect_from_api(session: Session, api_key: str) -> int:
     """소상공인진흥공단 API에서 서울 점포 데이터 수집."""
     base_url = "https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInDong"
-    # 서울 시군구 코드 목록 (25개 구)
     gu_codes = [
         "11110", "11140", "11170", "11200", "11215", "11230", "11260",
         "11290", "11305", "11320", "11350", "11380", "11410", "11440",
@@ -35,17 +38,20 @@ def _collect_from_api(session: Session, api_key: str) -> int:
 
     for gu_code in gu_codes:
         page = 1
+        gu_count = 0
         while True:
-            resp = httpx.get(base_url, params={
+            data = fetch_json(base_url, params={
                 "serviceKey": api_key,
                 "divId": "signguCd",
                 "key": gu_code,
                 "numOfRows": 1000,
                 "pageNo": page,
                 "type": "json",
-            }, timeout=30)
+            })
+            if not data:
+                logger.warning("No response for gu_code=%s page=%d, skipping", gu_code, page)
+                break
 
-            data = resp.json()
             items = data.get("body", {}).get("items", [])
             if not items:
                 break
@@ -55,33 +61,39 @@ def _collect_from_api(session: Session, api_key: str) -> int:
                 lng = item.get("lon")
                 if not lat or not lng:
                     continue
-
-                session.execute(text("""
-                    INSERT INTO store_master
-                        (store_name, industry_code, industry_name, address,
-                         lat, lng, geom, is_active, snapshot_date)
-                    VALUES
-                        (:name, :code, :ind_name, :addr,
-                         :lat, :lng, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326),
-                         1, :snap_date)
-                """), {
-                    "name": item.get("bizesNm", ""),
-                    "code": item.get("indsLclsCd", ""),
-                    "ind_name": item.get("indsLclsNm", ""),
-                    "addr": item.get("lnoAdr", ""),
-                    "lat": float(lat),
-                    "lng": float(lng),
-                    "snap_date": today,
-                })
-                count += 1
+                try:
+                    session.execute(text("""
+                        INSERT INTO store_master
+                            (store_name, industry_code, industry_name, address,
+                             lat, lng, geom, is_active, snapshot_date)
+                        VALUES
+                            (:name, :code, :ind_name, :addr,
+                             :lat, :lng, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326),
+                             1, :snap_date)
+                    """), {
+                        "name": item.get("bizesNm", ""),
+                        "code": item.get("indsLclsCd", ""),
+                        "ind_name": item.get("indsLclsNm", ""),
+                        "addr": item.get("lnoAdr", ""),
+                        "lat": float(lat),
+                        "lng": float(lng),
+                        "snap_date": today,
+                    })
+                    count += 1
+                    gu_count += 1
+                except Exception as e:
+                    logger.warning("Failed to insert store: %s", e)
 
             if len(items) < 1000:
                 break
             page += 1
 
+        logger.info("gu_code=%s: %d stores collected", gu_code, gu_count)
+
     session.commit()
     _assign_grid_ids(session)
     _compute_store_stats(session)
+    logger.info("Total stores collected: %d", count)
     return count
 
 
@@ -115,6 +127,7 @@ def _load_sample(session: Session) -> int:
     session.commit()
     _assign_grid_ids(session)
     _compute_store_stats(session)
+    logger.info("Sample stores loaded: %d", len(stores))
     return len(stores)
 
 

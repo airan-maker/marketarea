@@ -1,5 +1,8 @@
 """분석 API 엔드포인트."""
-from fastapi import APIRouter, Depends
+import subprocess
+import sys
+import logging
+from fastapi import APIRouter, BackgroundTasks, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +14,8 @@ from app.schemas.analysis import (
     GridHealthResponse,
 )
 from app.services.grid_aggregator import aggregate_grids
+
+etl_logger = logging.getLogger("etl.api")
 
 router = APIRouter()
 
@@ -102,3 +107,61 @@ async def get_grid_health(
         center_lng=grid[3],
         scores=scores,
     )
+
+
+def _run_etl_subprocess(force: bool = False):
+    """ETL을 별도 프로세스로 실행 (백그라운드 태스크)."""
+    cmd = [sys.executable, "scripts/run_etl.py"]
+    if force:
+        cmd.append("--force")
+    etl_logger.info("Starting ETL subprocess: %s", cmd)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode == 0:
+            etl_logger.info("ETL completed successfully")
+        else:
+            etl_logger.error("ETL failed (rc=%d): %s", result.returncode, result.stderr)
+    except subprocess.TimeoutExpired:
+        etl_logger.error("ETL timed out after 600s")
+    except Exception as e:
+        etl_logger.error("ETL subprocess error: %s", e)
+
+
+@router.post("/etl/run")
+async def trigger_etl(
+    background_tasks: BackgroundTasks,
+    force: bool = False,
+    db: AsyncSession = Depends(get_db),
+):
+    """ETL 수동 트리거 엔드포인트. force=true로 전체 재실행."""
+    # 현재 상태 반환
+    grid_count = (await db.execute(text("SELECT COUNT(*) FROM grid_master"))).scalar()
+    store_count = (await db.execute(text("SELECT COUNT(*) FROM grid_store_stats"))).scalar()
+    score_count = (await db.execute(text("SELECT COUNT(*) FROM grid_score"))).scalar()
+
+    background_tasks.add_task(_run_etl_subprocess, force)
+
+    return {
+        "status": "started",
+        "force": force,
+        "current_state": {
+            "grids": grid_count,
+            "store_stats": store_count,
+            "scores": score_count,
+        },
+    }
+
+
+@router.get("/etl/status")
+async def etl_status(db: AsyncSession = Depends(get_db)):
+    """현재 ETL 데이터 상태를 반환한다."""
+    counts = {}
+    for table in [
+        "grid_master", "store_master", "grid_store_stats",
+        "grid_floating_stats", "grid_population_stats",
+        "grid_sales_stats", "grid_rent_stats", "grid_score",
+    ]:
+        result = await db.execute(text(f"SELECT COUNT(*) FROM {table}"))
+        counts[table] = result.scalar()
+
+    return {"status": "ok", "counts": counts}
